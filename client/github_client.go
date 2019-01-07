@@ -44,3 +44,4 @@ func (g *GitHub) FetchRepositories(url string, resp chan []model.Repo, wg *sync.
 	resp <-repos
 	defer wg.Done()
 }
+

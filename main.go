@@ -2,49 +2,48 @@ package main
 
 import (
 	"fmt"
-	"github.com/yadavparmatma/git_master/client"
 	"github.com/yadavparmatma/git_master/config"
+	"github.com/yadavparmatma/git_master/executor"
 	"github.com/yadavparmatma/git_master/model"
-	"sync"
+	"github.com/yadavparmatma/git_master/printer"
+	"time"
 )
 
 func main() {
-	gitClient := &client.GitHub{}
 	users := []string{"yadavparmatma", "last-stand", "adwin"}
 
 	//TODO: Read config from config file and populate configuration
 	c := &config.Config{
 		Host:      "https://api.github.com/users",
 		Parameter: "repos",
+		Users:     users,
 	}
 
-	var wg sync.WaitGroup
-	wg.Add((len(users) * 2) + 1)
-
-	urls := make(chan string, len(users))
 	response := make(chan []model.Repo, len(users))
+	quit := make(chan int)
 
 	go func() {
-		for _, user := range users {
-			//TODO: Execute these inside a task
-			go gitClient.CreateUrl(c, user, urls, &wg)
-			go gitClient.FetchRepositories(<-urls, response, &wg)
+		task := &executor.Task{
+			Config: c,
+			Users:  users,
 		}
-		defer wg.Done()
+		go task.FetchRepositories(response)
 	}()
 
-	//TODO: Print response using goroutines
-	fmt.Println("Repository Description....")
-	for i := 0; i < len(users); i++ {
-		repos := <-response
-		for i := range repos {
-			repo := repos[i]
-			fmt.Println(i+1, ".")
-			fmt.Println("	", repo.Name)
-			fmt.Println("	", repo.Language)
+	for {
+		select {
+		case repos := <-response:
+			printer.PrintRepo(repos, quit)
+		case <-time.After(60 * time.Second):
+			fmt.Println("Fetch timeout..")
+			close(response)
+			close(quit)
+			return
+		case <-quit:
+			fmt.Println("Done...")
+			close(response)
+			close(quit)
+			return
 		}
 	}
-	wg.Wait()
-	close(urls)
-	close(response)
 }
