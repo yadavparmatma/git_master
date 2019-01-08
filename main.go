@@ -18,6 +18,8 @@ func main() {
 		Users:     users,
 	}
 
+	repoPrinter := &printer.RepoPrinter{}
+
 	response := make(chan []model.Repo, len(users))
 	quit := make(chan string)
 
@@ -33,7 +35,7 @@ func main() {
 	for {
 		select {
 		case repos := <-response:
-			printer.PrintRepo(repos)
+			repoPrinter.PrintRepo(repos)
 		case done := <-quit:
 			fmt.Println(done)
 			close(response)

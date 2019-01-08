@@ -5,7 +5,14 @@ import (
 	"github.com/yadavparmatma/git_master/model"
 )
 
-func PrintRepo(repos []model.Repo) {
+type Pinter interface {
+	Print(interface{})
+}
+
+type RepoPrinter struct {
+}
+
+func (repoPrinter *RepoPrinter) PrintRepo(repos []model.Repo) {
 	fmt.Println("Printing Repos......")
 	for i := range repos {
 		repo := repos[i]
