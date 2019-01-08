@@ -6,7 +6,6 @@ import (
 	"github.com/yadavparmatma/git_master/executor"
 	"github.com/yadavparmatma/git_master/model"
 	"github.com/yadavparmatma/git_master/printer"
-	"time"
 )
 
 func main() {
@@ -20,30 +19,30 @@ func main() {
 	}
 
 	response := make(chan []model.Repo, len(users))
-	quit := make(chan int)
+	quit := make(chan string)
 
 	go func() {
 		task := &executor.Task{
 			Config: c,
 			Users:  users,
 		}
-		go task.FetchRepositories(response)
+		task.FetchRepositories(response)
+		defer Done(quit)
 	}()
 
 	for {
 		select {
 		case repos := <-response:
-			printer.PrintRepo(repos, quit)
-		case <-time.After(60 * time.Second):
-			fmt.Println("Fetch timeout..")
-			close(response)
-			close(quit)
-			return
-		case <-quit:
-			fmt.Println("Done...")
+			printer.PrintRepo(repos)
+		case done := <-quit:
+			fmt.Println(done)
 			close(response)
 			close(quit)
 			return
 		}
 	}
+}
+
+func Done(quit chan string) {
+	quit <- "Done"
 }

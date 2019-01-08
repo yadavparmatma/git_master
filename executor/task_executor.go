@@ -21,7 +21,7 @@ func (task *Task) FetchRepositories(response chan []model.Repo) {
 	var wg sync.WaitGroup
 	wg.Add(len(task.Users) * 2)
 
-	gitClient := client.GitHub{}
+	gitClient := &client.GitHub{}
 	for _, user := range task.Users {
 		go gitClient.CreateUrl(task.Config, user, urls, &wg)
 		go gitClient.FetchRepositories(<-urls, response, &wg)

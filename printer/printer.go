@@ -5,7 +5,7 @@ import (
 	"github.com/yadavparmatma/git_master/model"
 )
 
-func PrintRepo(repos []model.Repo, quit chan int) {
+func PrintRepo(repos []model.Repo) {
 	fmt.Println("Printing Repos......")
 	for i := range repos {
 		repo := repos[i]
@@ -13,9 +13,4 @@ func PrintRepo(repos []model.Repo, quit chan int) {
 		fmt.Println("	", repo.Name)
 		fmt.Println("	", repo.Language)
 	}
-	defer done(quit)
-}
-
-func done(quit chan int) {
-	quit <- 0
 }
