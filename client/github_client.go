@@ -11,20 +11,28 @@ import (
 )
 
 type Client interface {
-	CreateUrl(*config.Config, string, chan string, *sync.WaitGroup)
-	FetchRepositories(string, chan []model.Repo, *sync.WaitGroup)
+	createUrl(*config.Config, string, chan string, *sync.WaitGroup)
+	fetchRepositories(string, chan []model.Repo, *sync.WaitGroup)
 }
 
 type GitHub struct {
 }
 
-func (g *GitHub) CreateUrl(config *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup) {
+func CreateUrl(hub *GitHub, config *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup) {
+	hub.createUrl(config, user, urlChannel, wg)
+}
+
+func Fetch(hub *GitHub, url string, repos chan []model.Repo, wg *sync.WaitGroup) {
+	hub.fetchRepositories(url, repos, wg)
+}
+
+func (g *GitHub) createUrl(config *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup) {
 	url := fmt.Sprintf("%v/%v/%v?per_page=20", config.Host, user, config.Parameter)
 	urlChannel <- url
 	defer wg.Done()
 }
 
-func (g *GitHub) FetchRepositories(url string, resp chan []model.Repo, wg *sync.WaitGroup) {
+func (g *GitHub) fetchRepositories(url string, resp chan []model.Repo, wg *sync.WaitGroup) {
 	res, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err.Error())

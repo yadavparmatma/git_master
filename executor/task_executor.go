@@ -21,14 +21,14 @@ func Execute(task *Task, resp chan []model.Repo) {
 }
 
 func (task *Task) fetchRepositories(response chan []model.Repo) {
-	urls := make(chan string, len(task.Users))
+	urlChannel := make(chan string, len(task.Users))
 	var wg sync.WaitGroup
 	wg.Add(len(task.Users) * 2)
 
 	gitClient := &client.GitHub{}
 	for _, user := range task.Users {
-		go gitClient.CreateUrl(task.Config, user, urls, &wg)
-		go gitClient.FetchRepositories(<-urls, response, &wg)
+		go client.CreateUrl(gitClient, task.Config, user, urlChannel, &wg)
+		go client.Fetch(gitClient, <-urlChannel, response, &wg)
 	}
 	wg.Wait()
 }
