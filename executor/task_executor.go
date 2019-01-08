@@ -8,7 +8,7 @@ import (
 )
 
 type TaskExecutor interface {
-	fetchRepositories(resp chan []model.Repo)
+	fetchRepositories(chan []model.Repo)
 }
 
 type Task struct {

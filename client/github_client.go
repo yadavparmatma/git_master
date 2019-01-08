@@ -11,20 +11,20 @@ import (
 )
 
 type Client interface {
-	CreateUrl(c *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup)
-	FetchRepositories(url string, resp chan []model.Repo, wg *sync.WaitGroup)
+	CreateUrl(*config.Config, string, chan string, *sync.WaitGroup)
+	FetchRepositories(string, chan []model.Repo, *sync.WaitGroup)
 }
 
 type GitHub struct {
 }
 
-func (g *GitHub) CreateUrl(config *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup){
+func (g *GitHub) CreateUrl(config *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup) {
 	url := fmt.Sprintf("%v/%v/%v?per_page=20", config.Host, user, config.Parameter)
 	urlChannel <- url
 	defer wg.Done()
 }
 
-func (g *GitHub) FetchRepositories(url string, resp chan []model.Repo, wg *sync.WaitGroup){
+func (g *GitHub) FetchRepositories(url string, resp chan []model.Repo, wg *sync.WaitGroup) {
 	res, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -41,7 +41,6 @@ func (g *GitHub) FetchRepositories(url string, resp chan []model.Repo, wg *sync.
 
 	var repos []model.Repo
 	err = json.Unmarshal(bytes, &repos)
-	resp <-repos
+	resp <- repos
 	defer wg.Done()
 }
-
