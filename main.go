@@ -27,7 +27,7 @@ func main() {
 			Config: c,
 			Users:  users,
 		}
-		task.FetchRepositories(response)
+		executor.Execute(task, response)
 		defer Done(quit)
 	}()
 

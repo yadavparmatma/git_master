@@ -8,7 +8,7 @@ import (
 )
 
 type TaskExecutor interface {
-	FetchRepositories(resp chan []model.Repo)
+	fetchRepositories(resp chan []model.Repo)
 }
 
 type Task struct {
@@ -16,7 +16,11 @@ type Task struct {
 	Users  []string
 }
 
-func (task *Task) FetchRepositories(response chan []model.Repo) {
+func Execute(task *Task, resp chan []model.Repo) {
+	task.fetchRepositories(resp)
+}
+
+func (task *Task) fetchRepositories(response chan []model.Repo) {
 	urls := make(chan string, len(task.Users))
 	var wg sync.WaitGroup
 	wg.Add(len(task.Users) * 2)
