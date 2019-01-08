@@ -5,14 +5,18 @@ import (
 	"github.com/yadavparmatma/git_master/model"
 )
 
-type Pinter interface {
-	Print(interface{})
+type Printer interface {
+	print([]model.Repo)
 }
 
 type RepoPrinter struct {
 }
 
-func (repoPrinter *RepoPrinter) PrintRepo(repos []model.Repo) {
+func Print(printer Printer, repos []model.Repo) {
+	printer.print(repos)
+}
+
+func (repoPrinter RepoPrinter) print(repos []model.Repo) {
 	fmt.Println("Printing Repos......")
 	for i := range repos {
 		repo := repos[i]
