@@ -16,7 +16,7 @@ func Print(printer Printer, repos []model.Repo) {
 	printer.print(repos)
 }
 
-func (repoPrinter RepoPrinter) print(repos []model.Repo) {
+func (repoPrinter *RepoPrinter) print(repos []model.Repo) {
 	fmt.Println("Printing Repos......")
 	for i := range repos {
 		repo := repos[i]

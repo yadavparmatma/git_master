@@ -18,7 +18,7 @@ func main() {
 		Users:     users,
 	}
 
-	repoPrinter := printer.RepoPrinter{}
+	repoPrinter := &printer.RepoPrinter{}
 	response := make(chan []model.Repo, len(users))
 	quit := make(chan string)
 
