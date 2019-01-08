@@ -10,16 +10,15 @@ BINARY_DARWIN=$(BINARY_NAME)_darwin
 all: test build
 
 build:
-	$(GOBUILD) -o $(BINARY_NAME) -v
+	$(GOBUILD) -o ./out/$(BINARY_NAME)_darwin -v
 test:
 	$(GOTEST) -v ./...
 clean:
 	$(GOCLEAN)
-	rm -f $(BINARY_NAME)
-	rm -f $(BINARY_UNIX)
+	rm -f ./out/$(BINARY_NAME)_darwin
 run:
-	$(GOBUILD) -o $(BINARY_NAME) -v ./...
-	./$(BINARY_NAME)
+	$(GOBUILD) -o ./out/$(BINARY_NAME)_darwin -v
+	./out/$(BINARY_NAME)_darwin
 
 build-darwin:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -o ./out/$(BINARY_DARWIN) -v
