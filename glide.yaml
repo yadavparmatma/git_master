@@ -1,0 +1,3 @@
+package: github.com/yadavparmatma/git_master
+import:
+- package: github.com/vektra/mockery

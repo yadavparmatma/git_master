@@ -1,0 +1,6 @@
+hash: baa7be31085f5bf543ee554739759b0886191ae844d61d864a032e4085c90e63
+updated: 2019-01-09T17:02:14.912067+05:30
+imports:
+- name: github.com/vektra/mockery
+  version: e78b021dcbb558a8e7ac1fc5bc757ad7c277bb81
+testImports: []

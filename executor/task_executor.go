@@ -8,7 +8,7 @@ import (
 )
 
 type TaskExecutor interface {
-	fetchRepositories(chan []model.Repo)
+	Execute(chan []model.Repo)
 }
 
 type Task struct {
@@ -16,19 +16,15 @@ type Task struct {
 	Users  []string
 }
 
-func Execute(task *Task, resp chan []model.Repo) {
-	task.fetchRepositories(resp)
-}
-
-func (task *Task) fetchRepositories(response chan []model.Repo) {
+func (task *Task) Execute(responseChannel chan []model.Repo) {
 	urlChannel := make(chan string, len(task.Users))
 	var wg sync.WaitGroup
 	wg.Add(len(task.Users) * 2)
 
-	gitClient := &client.GitHub{}
+	gc := &client.GitHub{}
 	for _, user := range task.Users {
-		go client.CreateUrl(gitClient, task.Config, user, urlChannel, &wg)
-		go client.Fetch(gitClient, <-urlChannel, response, &wg)
+		go gc.CreateUrl(task.Config, user, urlChannel, &wg)
+		go gc.Fetch(<-urlChannel, responseChannel, &wg)
 	}
 	wg.Wait()
 }

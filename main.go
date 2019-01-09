@@ -27,14 +27,14 @@ func main() {
 			Config: c,
 			Users:  users,
 		}
-		executor.Execute(task, response)
+		task.Execute(response)
 		defer Done(quit)
 	}()
 
 	for {
 		select {
 		case repos := <-response:
-			printer.Print(repoPrinter, repos)
+			repoPrinter.Print(repos)
 		case done := <-quit:
 			fmt.Println(done)
 			close(response)
