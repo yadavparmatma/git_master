@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/yadavparmatma/git_master/client"
 	"github.com/yadavparmatma/git_master/config"
 	"github.com/yadavparmatma/git_master/executor"
 	"github.com/yadavparmatma/git_master/model"
@@ -22,10 +23,14 @@ func main() {
 
 	task := &executor.Task{
 		Config: c,
+		Client: new(client.GitHub),
 	}
 
 	for _, user := range users {
-		go task.Execute(user, response)
+		go func(u string) {
+			execute := task.Execute(u)
+			response <- execute
+		}(user)
 	}
 
 	for {

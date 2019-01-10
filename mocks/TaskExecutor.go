@@ -10,7 +10,18 @@ type TaskExecutor struct {
 	mock.Mock
 }
 
-// Execute provides a mock function with given fields: _a0, _a1
-func (_m *TaskExecutor) Execute(_a0 string, _a1 chan []model.Repo) {
-	_m.Called(_a0, _a1)
+// Execute provides a mock function with given fields: _a0
+func (_m *TaskExecutor) Execute(_a0 string) chan []model.Repo {
+	ret := _m.Called(_a0)
+
+	var r0 chan []model.Repo
+	if rf, ok := ret.Get(0).(func(string) chan []model.Repo); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(chan []model.Repo)
+		}
+	}
+
+	return r0
 }

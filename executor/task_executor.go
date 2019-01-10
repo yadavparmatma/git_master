@@ -7,17 +7,18 @@ import (
 )
 
 type TaskExecutor interface {
-	Execute(string, chan []model.Repo)
+	Execute(string) chan []model.Repo
 }
 
 type Task struct {
 	TaskExecutor
 	Config *config.Config
+	Client client.Client
 }
 
-func (task *Task) Execute(user string, responseChannel chan []model.Repo) {
-	gc := &client.GitHub{}
+func (task *Task) Execute(user string) []model.Repo {
+	gc := task.Client
 	url := gc.CreateUrl(task.Config, user)
 	repos := gc.Fetch(url)
-	responseChannel <- repos
+	return repos
 }
