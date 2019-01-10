@@ -11,6 +11,7 @@ type TaskExecutor interface {
 }
 
 type Task struct {
+	TaskExecutor
 	Config *config.Config
 }
 

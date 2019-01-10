@@ -10,6 +10,7 @@ type Printer interface {
 }
 
 type RepoPrinter struct {
+	Printer
 }
 
 func (repoPrinter *RepoPrinter) Print(repos []model.Repo) {

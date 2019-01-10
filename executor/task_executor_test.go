@@ -4,14 +4,26 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/yadavparmatma/git_master/config"
-	"github.com/yadavparmatma/git_master/mocks"
 	"github.com/yadavparmatma/git_master/model"
 	"testing"
 )
 
+type GitHub struct {
+	mock.Mock
+}
+
+func (m *GitHub) Fetch(url string) []model.Repo {
+	res := m.Called(url)
+	return res.Get(0).([]model.Repo)
+}
+
+func (m *GitHub) CreatUrl(config *config.Config, user string) string {
+	res := m.Called(config, user)
+	return res.Get(0).(string)
+}
+
 func TestExecute(t *testing.T) {
 	responseChannel := make(chan []model.Repo)
-	cl := mocks.Client{}
 
 	task := &Task{
 		Config: &config.Config{
@@ -22,9 +34,10 @@ func TestExecute(t *testing.T) {
 
 	expectedUrl := "http://host/yadav/repo?per_page=20"
 	var expectedRepos []model.Repo
+	hub := GitHub{}
 
-	cl.On("CreateUrl", mock.Anything, mock.Anything).Return(expectedUrl)
-	cl.On("Fetch", mock.Anything).Return(expectedRepos)
+	hub.On("CreateUrl", task.Config, "yadav").Return(expectedUrl)
+	hub.On("Fetch", expectedUrl).Return(expectedRepos)
 
 	task.Execute("yadav", responseChannel)
 

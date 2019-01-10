@@ -15,6 +15,7 @@ type Client interface {
 }
 
 type GitHub struct {
+	Client
 }
 
 func (g *GitHub) CreateUrl(config *config.Config, user string) string {
