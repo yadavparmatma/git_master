@@ -26,6 +26,7 @@ func (g *GitHub) Fetch(url string) []model.Repo {
 	res, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err.Error())
+		return []model.Repo{}
 	}
 
 	defer res.Body.Close()
