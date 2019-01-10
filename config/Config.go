@@ -1,7 +1,6 @@
 package config
 
 type Config struct {
-	Host       string
+	Host      string
 	Parameter string
-	Users []string
 }

@@ -7,24 +7,21 @@ import (
 	"github.com/yadavparmatma/git_master/model"
 	"io/ioutil"
 	"net/http"
-	"sync"
 )
 
 type Client interface {
-	CreateUrl(*config.Config, string, chan string, *sync.WaitGroup)
-	Fetch(string, chan []model.Repo, *sync.WaitGroup)
+	CreateUrl(*config.Config, string) string
+	Fetch(string) []model.Repo
 }
 
 type GitHub struct {
 }
 
-func (g *GitHub) CreateUrl(config *config.Config, user string, urlChannel chan string, wg *sync.WaitGroup) {
-	url := fmt.Sprintf("%v/%v/%v?per_page=20", config.Host, user, config.Parameter)
-	urlChannel <- url
-	defer wg.Done()
+func (g *GitHub) CreateUrl(config *config.Config, user string) string {
+	return fmt.Sprintf("%v/%v/%v?per_page=20", config.Host, user, config.Parameter)
 }
 
-func (g *GitHub) Fetch(url string, resp chan []model.Repo, wg *sync.WaitGroup) {
+func (g *GitHub) Fetch(url string) []model.Repo {
 	res, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -36,11 +33,10 @@ func (g *GitHub) Fetch(url string, resp chan []model.Repo, wg *sync.WaitGroup) {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		resp <- []model.Repo{}
+		return []model.Repo{}
 	}
 
 	var repos []model.Repo
 	err = json.Unmarshal(bytes, &repos)
-	resp <- repos
-	defer wg.Done()
+	return repos
 }

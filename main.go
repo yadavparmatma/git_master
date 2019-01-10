@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/yadavparmatma/git_master/config"
 	"github.com/yadavparmatma/git_master/executor"
 	"github.com/yadavparmatma/git_master/model"
 	"github.com/yadavparmatma/git_master/printer"
+	"time"
 )
 
 func main() {
@@ -15,35 +15,25 @@ func main() {
 	c := &config.Config{
 		Host:      "https://api.github.com/users",
 		Parameter: "repos",
-		Users:     users,
 	}
 
 	repoPrinter := &printer.RepoPrinter{}
-	response := make(chan []model.Repo, len(users))
-	quit := make(chan string)
+	response := make(chan []model.Repo)
 
-	go func() {
-		task := &executor.Task{
-			Config: c,
-			Users:  users,
-		}
-		task.Execute(response)
-		defer Done(quit)
-	}()
+	task := &executor.Task{
+		Config: c,
+	}
+
+	for _, user := range users {
+		go task.Execute(user, response)
+	}
 
 	for {
 		select {
 		case repos := <-response:
 			repoPrinter.Print(repos)
-		case done := <-quit:
-			fmt.Println(done)
-			close(response)
-			close(quit)
+		case <-time.After(time.Second * 10):
 			return
 		}
 	}
-}
-
-func Done(quit chan string) {
-	quit <- "Done"
 }

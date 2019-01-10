@@ -1,29 +1,32 @@
 package executor
 
 import (
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/yadavparmatma/git_master/config"
+	"github.com/yadavparmatma/git_master/mocks"
+	"github.com/yadavparmatma/git_master/model"
 	"testing"
 )
 
 func TestExecute(t *testing.T) {
-	//urlChannel := make(chan string)
-	//responseChannel := make(chan []model.Repo)
-	//users := []string{"yadav"}
-	//
-	//task := Task{
-	//	Config: &config.Config{
-	//		Host:      "http://host",
-	//		Parameter: "Repo",
-	//		Users:     users,
-	//	},
-	//	Users: users,
-	//}
-	//
-	//task.Execute(responseChannel)
-	//client := mocks.Client{}
-	//any := mock.AnythingOfTypeArgument("")
-	//
-	//client.On("CreateUrl", any, any, responseChannel, any)
-	//
-	//url := <-urlChannel
-	//assert.Equal(t, url, "http://host/yadav/Repo?per_page=20")
+	responseChannel := make(chan []model.Repo)
+	cl := mocks.Client{}
+
+	task := &Task{
+		Config: &config.Config{
+			Host:      "http://host",
+			Parameter: "repo",
+		},
+	}
+
+	expectedUrl := "http://host/yadav/repo?per_page=20"
+	var expectedRepos []model.Repo
+
+	cl.On("CreateUrl", mock.Anything, mock.Anything).Return(expectedUrl)
+	cl.On("Fetch", mock.Anything).Return(expectedRepos)
+
+	task.Execute("yadav", responseChannel)
+
+	assert.Equal(t, expectedRepos, <-responseChannel)
 }
