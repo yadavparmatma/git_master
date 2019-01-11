@@ -4,9 +4,8 @@ import (
 	"github.com/yadavparmatma/git_master/client"
 	"github.com/yadavparmatma/git_master/config"
 	"github.com/yadavparmatma/git_master/executor"
-	"github.com/yadavparmatma/git_master/model"
 	"github.com/yadavparmatma/git_master/printer"
-	"time"
+	"sync"
 )
 
 func main() {
@@ -19,26 +18,19 @@ func main() {
 	}
 
 	repoPrinter := &printer.RepoPrinter{}
-	response := make(chan []model.Repo)
-
 	task := &executor.Task{
 		Config: c,
 		Client: new(client.GitHub),
 	}
 
+	var wg sync.WaitGroup
 	for _, user := range users {
+		wg.Add(1)
 		go func(u string) {
 			execute := task.Execute(u)
-			response <- execute
+			repoPrinter.Print(execute)
+			defer wg.Done()
 		}(user)
 	}
-
-	for {
-		select {
-		case repos := <-response:
-			repoPrinter.Print(repos)
-		case <-time.After(time.Second * 10):
-			return
-		}
-	}
+	wg.Wait()
 }
