@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	c "github.com/yadavparmatma/git_master/config"
 	"github.com/yadavparmatma/git_master/model"
@@ -28,12 +29,13 @@ func TestGitHub_CreateUrl(t *testing.T) {
 func TestGitHub_Fetch_Response_Success(t *testing.T) {
 	repo := model.Repo{Name: "A", Language: "B",}
 	expected := append(make([]model.Repo, 0), repo)
-	bytes, _ := json.Marshal(expected)
+	body, _ := json.Marshal(expected)
 
 	server := httptest.NewServer(
 		http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				io.WriteString(w, string(bytes))
+				n, _ := io.WriteString(w, string(body))
+				fmt.Println(n)
 			}))
 
 	defer server.Close()

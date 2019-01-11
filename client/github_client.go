@@ -31,12 +31,7 @@ func (g *GitHub) Fetch(url string) []model.Repo {
 
 	defer res.Body.Close()
 
-	bytes, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return []model.Repo{}
-	}
+	bytes, _ := ioutil.ReadAll(res.Body)
 
 	var repos []model.Repo
 	err = json.Unmarshal(bytes, &repos)
